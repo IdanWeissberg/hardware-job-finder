@@ -26,18 +26,25 @@
 
 ---
 
-## הגדרה ראשונית — CallMeBot
+## הגדרה ראשונית — Telegram (מומלץ)
 
-CallMeBot הוא שירות חינמי שמאפשר לשלוח הודעות WhatsApp דרך API פשוט.
+המערכת שולחת התראות דרך **Telegram** — חינמי, מיידי, ואמין (ללא מגבלות תפוסה כמו ב-CallMeBot).
 
-### שלב 1: רישום ל-CallMeBot
+### שלב 1: יצירת בוט
 
-1. פתחו WhatsApp ושלחו הודעה למספר: **+34 644 38 34 95**
-   - הטקסט שיש לשלוח: `I allow callmebot to send me messages`
-2. תוך כ-60 שניות תקבלו הודעה חזרה עם ה-**API Key** שלכם (מחרוזת מספרים כמו `1234567`).
-3. שמרו את ה-API Key — תצטרכו אותו בשלב הבא.
+1. ב-Telegram חפשו את **@BotFather** ופתחו צ'אט.
+2. שלחו `/newbot`, בחרו שם ושם-משתמש שמסתיים ב-`bot`.
+3. תקבלו **טוקן** במבנה `8123456789:AAH...xyz` — שמרו אותו.
+4. פתחו את הבוט החדש שיצרתם ושלחו לו הודעה כלשהי (למשל `hi`).
 
-> **חשוב:** כל מספר WhatsApp מקבל API Key ייחודי. תהליך זה נדרש רק פעם אחת.
+### שלב 2: השגת ה-Chat ID
+
+1. חפשו את **@userinfobot** ב-Telegram ולחצו **Start**.
+2. הוא יחזיר שורה כמו `Id: 123456789` — זהו ה-Chat ID שלכם.
+
+> **חלופה (אופציונלי):** המערכת תומכת גם ב-CallMeBot (WhatsApp) וב-Twilio.
+> ל-CallMeBot: שלחו `I allow callmebot to send me messages` למספר הבוט הרשמי,
+> והגדירו `CALLMEBOT_PHONE` + `CALLMEBOT_API_KEY` במקום משתני ה-Telegram.
 
 ---
 
@@ -53,8 +60,14 @@ CallMeBot הוא שירות חינמי שמאפשר לשלוח הודעות What
 
 | שם ה-Secret | תיאור | דוגמה |
 |-------------|--------|--------|
-| `CALLMEBOT_PHONE` | מספר הטלפון שלכם עם קידומת מדינה | `+972501234567` |
-| `CALLMEBOT_API_KEY` | ה-API Key שקיבלתם מ-CallMeBot | `1234567` |
+| `WHATSAPP_PROVIDER` | ספק ההתראות | `telegram` |
+| `TELEGRAM_BOT_TOKEN` | הטוקן שקיבלתם מ-@BotFather | `8123456789:AAH...` |
+| `TELEGRAM_CHAT_ID` | ה-Chat ID שלכם מ-@userinfobot | `123456789` |
+
+> **אם אתם משתמשים ב-CallMeBot (WhatsApp) במקום**, הגדירו:
+> - `WHATSAPP_PROVIDER` = `callmebot`
+> - `CALLMEBOT_PHONE` = `+972501234567`
+> - `CALLMEBOT_API_KEY` = `1234567`
 
 > **אם אתם משתמשים ב-Twilio (אופציונלי)**, הוסיפו גם:
 > - `WHATSAPP_PROVIDER` = `twilio`
