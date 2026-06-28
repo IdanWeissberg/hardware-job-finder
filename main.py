@@ -172,7 +172,14 @@ def run(init_mode: bool = False) -> None:
                 state.clear_pending()
                 log.info("Notifications sent and queue cleared")
             else:
-                log.error("Notification failed — pending queue NOT cleared (will retry next run)")
+                # Notification failed (e.g. WhatsApp credentials not yet configured).
+                # Persist ALL undelivered jobs to the pending queue so nothing is lost —
+                # they will be retried on the next run once notifications work.
+                state.save_pending(jobs_to_send)
+                log.error(
+                    "Notification failed — %d job(s) saved to pending queue for retry next run "
+                    "(check WhatsApp credentials)", len(jobs_to_send)
+                )
         else:
             log.info("No new relevant jobs and no pending queue — nothing to send")
 
