@@ -15,7 +15,12 @@ Providers supported:
        TWILIO_FROM        — Twilio sandbox number (e.g. whatsapp:+14155238886)
        TWILIO_TO          — your WhatsApp number  (e.g. whatsapp:+972501234567)
 
-Set WHATSAPP_PROVIDER=twilio to switch (default: callmebot).
+  3. Telegram Bot API (free, instant, very reliable)
+     Create a bot via @BotFather, then required env vars:
+       TELEGRAM_BOT_TOKEN — token from BotFather (e.g. 8123456789:AAH...)
+       TELEGRAM_CHAT_ID   — your chat id (auto-discoverable from getUpdates)
+
+Set WHATSAPP_PROVIDER to "callmebot", "twilio", or "telegram" (default: callmebot).
 """
 from __future__ import annotations
 
@@ -98,6 +103,63 @@ def _send_twilio(text: str) -> bool:
         return False
 
 
+def _escape_html(text: str) -> str:
+    return text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+
+
+def _format_jobs_telegram(jobs: list[dict], max_jobs: int = 20) -> str:
+    """Telegram HTML-formatted job list (company in bold, title linked)."""
+    lines = []
+    for j in jobs[:max_jobs]:
+        company = _escape_html(j["company"])
+        title = _escape_html(j["title"])
+        location = _escape_html(j["location"])
+        url = _escape_html(j["url"])
+        lines.append(
+            f'🔧 <b>{company}</b> — <a href="{url}">{title}</a>\n'
+            f"   📍 {location}"
+        )
+    msg = "\n\n".join(lines)
+    if len(jobs) > max_jobs:
+        msg += f"\n\n…ועוד {len(jobs) - max_jobs} משרות נוספות"
+    return msg
+
+
+def _send_telegram(jobs: list[dict], max_jobs: int = 20) -> bool:
+    token = os.environ.get("TELEGRAM_BOT_TOKEN", "")
+    chat_id = os.environ.get("TELEGRAM_CHAT_ID", "")
+
+    if not token or not chat_id:
+        log.error("TELEGRAM_BOT_TOKEN or TELEGRAM_CHAT_ID env vars not set")
+        return False
+
+    header = (
+        f"🚨 <b>{len(jobs)} משרה{'ות' if len(jobs) > 1 else ''} חומרה "
+        f"חדשה{'ות' if len(jobs) > 1 else ''} נמצא{'ו' if len(jobs) > 1 else ''}!</b>\n\n"
+    )
+    text = header + _format_jobs_telegram(jobs, max_jobs)
+    if len(text) > 4096:
+        text = text[:4040] + "\n…(קוצר)"
+
+    url = f"https://api.telegram.org/bot{token}/sendMessage"
+    payload = {
+        "chat_id": chat_id,
+        "text": text,
+        "parse_mode": "HTML",
+        "disable_web_page_preview": True,
+    }
+    try:
+        resp = requests.post(url, json=payload, timeout=15)
+        if resp.status_code == 200 and resp.json().get("ok"):
+            log.info("Telegram: message sent successfully")
+            return True
+        log.warning("Telegram returned: %s — %s", resp.status_code, resp.text[:200])
+        return False
+    except Exception as exc:
+        log.error("Telegram request failed: %s", exc)
+        return False
+
+
 def send_whatsapp(jobs: list[dict], max_jobs: int = 20) -> bool:
     """Send a consolidated WhatsApp message for a list of jobs."""
     if not jobs:
@@ -113,8 +175,10 @@ def send_whatsapp(jobs: list[dict], max_jobs: int = 20) -> bool:
     if len(full_text) > MAX_WHATSAPP_CHARS:
         full_text = full_text[:MAX_WHATSAPP_CHARS - 50] + "\n...(קוצר)"
 
-    log.info("Sending WhatsApp via %s: %d job(s)", provider, len(jobs))
+    log.info("Sending notification via %s: %d job(s)", provider, len(jobs))
 
+    if provider == "telegram":
+        return _send_telegram(jobs, max_jobs)
     if provider == "twilio":
         return _send_twilio(full_text)
     return _send_callmebot(full_text)
