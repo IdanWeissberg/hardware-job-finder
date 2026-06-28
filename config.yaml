@@ -1,0 +1,353 @@
+﻿# ============================================================
+# Hardware Job Monitor â€” Configuration
+# Edit this file to add/remove companies or adjust keywords.
+# ============================================================
+
+# ---------- Keyword filters ----------
+# A job must match at least ONE keyword from EACH list.
+keywords:
+  hardware:
+    - hardware
+    - asic
+    - vlsi
+    - fpga
+    - rtl
+    - verilog
+    - soc
+    - silicon
+    - "physical design"
+    - dft
+    - analog
+    - "mixed signal"
+    - circuit
+    - semiconductor
+    - "design verification"
+    - "place and route"
+    - layout
+    - chip
+    - pcb
+    - schematic
+    - ×—×•×ž×¨×”
+
+  student:
+    - student
+    - intern
+    - internship
+    - "new grad"
+    - graduate
+    - "entry level"
+    - co-op
+    - coop
+    - junior
+    - ×¡×˜×•×“× ×˜
+    - ×ž×ª×ž×—×”
+    - ×”×ª×ž×—×•×ª
+
+# ---------- Quiet hours ----------
+# No WhatsApp messages are sent between quiet_start and quiet_end (Israel time).
+# Jobs found during this window are queued and sent in a digest after quiet_end.
+quiet_hours:
+  start: "00:00"
+  end: "07:00"
+  timezone: "Asia/Jerusalem"
+
+# ---------- Notification settings ----------
+notification:
+  # Provider: "callmebot" or "twilio"
+  provider: "callmebot"
+  # Max jobs to list per WhatsApp message before truncating
+  max_jobs_per_message: 20
+
+# ---------- Companies ----------
+# ats values:
+#   workday        â€” POST to Workday CXS endpoint (needs workday_url + base_url)
+#   greenhouse     â€” Greenhouse Job Board API (needs board)
+#   lever          â€” Lever public postings API (needs company)
+#   comeet         â€” Comeet public careers page (needs slug; optionally uid+token for API)
+#   amazon         â€” Amazon.jobs JSON endpoint
+#   apple          â€” Apple careers POST API
+#   microsoft      â€” Microsoft careers API
+#   smartrecruitersâ€” SmartRecruiters public postings API (needs company_id)
+#   icims          â€” iCIMS jobs search (needs subdomain)
+#   google         â€” Google careers scraper
+#   eightfold      â€” Eightfold.ai API (needs domain)
+#   workable       â€” Workable public apply API (needs slug)
+#   scraper        â€” Generic HTML scraper (needs careers_url; set fragile: true)
+
+companies:
+
+  # =====================================================================
+  # GLOBAL COMPANIES
+  # =====================================================================
+
+  - name: "Intel"
+    enabled: true
+    ats: workday
+    workday_url: "https://intel.wd1.myworkdayjobs.com/wday/cxs/intel/External/jobs"
+    base_url: "https://intel.wd1.myworkdayjobs.com"
+    location_filter: "Israel"
+
+  - name: "Habana Labs"
+    enabled: true
+    ats: workday
+    # Habana Labs jobs appear under Intel's Workday instance
+    workday_url: "https://intel.wd1.myworkdayjobs.com/wday/cxs/intel/External/jobs"
+    base_url: "https://intel.wd1.myworkdayjobs.com"
+    location_filter: "Israel"
+    search_text: "Habana"
+
+  - name: "Mobileye"
+    enabled: true
+    ats: lever
+    company: "mobileye"
+    eu: true    # Mobileye uses the EU Lever instance (jobs.eu.lever.co)
+
+  - name: "Qualcomm"
+    enabled: true
+    ats: workday
+    workday_url: "https://qualcomm.wd12.myworkdayjobs.com/wday/cxs/qualcomm/External/jobs"
+    base_url: "https://qualcomm.wd12.myworkdayjobs.com"
+    location_filter: "Israel"
+
+  - name: "Apple"
+    enabled: true
+    ats: apple
+    location_id: "ISR"   # Apple's location code for Israel
+
+  - name: "Amazon"
+    enabled: true
+    ats: amazon
+    location: "Israel"
+
+  - name: "Annapurna Labs"
+    enabled: true
+    ats: amazon
+    location: "Israel"
+    # Annapurna Labs jobs appear under Amazon's system
+    base_query: "Annapurna"
+
+  - name: "Google"
+    enabled: true
+    ats: scraper
+    careers_url: "https://careers.google.com/jobs/results/?company=Google&q=hardware+intern&location=Israel"
+    fragile: true
+
+  - name: "NVIDIA"
+    enabled: true
+    ats: workday
+    workday_url: "https://nvidia.wd5.myworkdayjobs.com/wday/cxs/nvidia/NVIDIAExternalCareerSite/jobs"
+    base_url: "https://nvidia.wd5.myworkdayjobs.com"
+    location_filter: "Israel"
+
+  - name: "Marvell"
+    enabled: true
+    ats: workday
+    workday_url: "https://marvell.wd1.myworkdayjobs.com/wday/cxs/marvell/MarvellCareers/jobs"
+    base_url: "https://marvell.wd1.myworkdayjobs.com"
+    location_filter: "Israel"
+
+  - name: "Broadcom"
+    enabled: true
+    ats: workday
+    workday_url: "https://broadcom.wd1.myworkdayjobs.com/wday/cxs/broadcom/External_Career/jobs"
+    base_url: "https://broadcom.wd1.myworkdayjobs.com"
+    location_filter: "Israel"
+
+  - name: "AMD"
+    enabled: true
+    ats: scraper
+    careers_url: "https://careers.amd.com/careers-home/jobs?location=Israel"
+    fragile: true
+
+  - name: "Samsung Semiconductor"
+    enabled: true
+    ats: greenhouse
+    board: "samsungsemiconductor"
+    location_filter: "Israel"
+
+  - name: "Western Digital"
+    enabled: true
+    ats: smartrecruiters
+    company_id: "WesternDigital"
+    location_filter: "Israel"
+
+  - name: "Analog Devices"
+    enabled: true
+    ats: workday
+    workday_url: "https://analogdevices.wd1.myworkdayjobs.com/wday/cxs/analogdevices/External/jobs"
+    base_url: "https://analogdevices.wd1.myworkdayjobs.com"
+    location_filter: "Israel"
+
+  - name: "Texas Instruments"
+    enabled: true
+    ats: scraper
+    careers_url: "https://careers.ti.com/search-jobs/Israel/524/4/0/39/2/0/0"
+    fragile: true
+
+  - name: "Microsoft"
+    enabled: true
+    ats: microsoft
+    location_filter: "Israel"
+
+  - name: "Synopsys"
+    enabled: true
+    ats: scraper
+    careers_url: "https://careers.synopsys.com/jobs?location=Israel&keywords=hardware+intern"
+    fragile: true
+
+  - name: "Cadence"
+    enabled: true
+    ats: workday
+    workday_url: "https://cadence.wd1.myworkdayjobs.com/wday/cxs/cadence/External_Careers/jobs"
+    base_url: "https://cadence.wd1.myworkdayjobs.com"
+    location_filter: "Israel"
+
+  - name: "Applied Materials"
+    enabled: true
+    ats: workday
+    workday_url: "https://amat.wd1.myworkdayjobs.com/wday/cxs/amat/External/jobs"
+    base_url: "https://amat.wd1.myworkdayjobs.com"
+    location_filter: "Israel"
+
+  - name: "KLA"
+    enabled: true
+    ats: workday
+    workday_url: "https://kla.wd1.myworkdayjobs.com/wday/cxs/kla/Search/jobs"
+    base_url: "https://kla.wd1.myworkdayjobs.com"
+    location_filter: "Israel"
+
+  - name: "Infineon"
+    enabled: true
+    ats: scraper
+    careers_url: "https://jobs.infineon.com/careers?query=hardware+intern&location=Israel"
+    fragile: true
+
+  - name: "STMicroelectronics"
+    enabled: true
+    ats: eightfold
+    domain: "stmicroelectronics.com"
+    location_filter: "Israel"
+
+  - name: "Cisco"
+    enabled: true
+    ats: workday
+    workday_url: "https://cisco.wd5.myworkdayjobs.com/wday/cxs/cisco/Cisco_Careers/jobs"
+    base_url: "https://cisco.wd5.myworkdayjobs.com"
+    location_filter: "Israel"
+
+  # =====================================================================
+  # ISRAELI SEMICONDUCTOR / HARDWARE COMPANIES
+  # =====================================================================
+
+  - name: "Tower Semiconductor"
+    enabled: true
+    ats: scraper
+    careers_url: "https://careers.towersemi.com/career-opportunities/"
+    fragile: true
+
+  - name: "Nova"
+    enabled: true
+    ats: scraper
+    careers_url: "https://www.nova.co.il/careers"
+    fragile: true
+
+  - name: "Camtek"
+    enabled: true
+    ats: scraper
+    careers_url: "https://www.camtek.com/company/career"
+    fragile: true
+
+  - name: "Ceva"
+    enabled: true
+    ats: scraper
+    careers_url: "https://ceva.csod.com/ux/ats/careersite/3/home"
+    fragile: true
+
+  - name: "Valens Semiconductor"
+    enabled: true
+    ats: scraper
+    careers_url: "https://www.valens.com/positions/"
+    fragile: true
+
+  - name: "Hailo"
+    enabled: true
+    ats: scraper
+    careers_url: "https://hailo.ai/company-overview/careers/"
+    fragile: true
+
+  - name: "NeuReality"
+    enabled: false
+    # Company appears to have been acquired; careers page unavailable
+
+  - name: "Next Silicon"
+    enabled: true
+    ats: comeet
+    slug: "nextsilicon"
+    uid: "18.007"
+    token: "817308A2873102E1845308A308A40B8308A205C"
+
+  - name: "Speedata"
+    enabled: true
+    ats: scraper
+    careers_url: "https://www.speedata.io/careers-1"
+    fragile: true
+
+  - name: "Pliops"
+    enabled: true
+    ats: scraper
+    careers_url: "https://pliops.com/careers/"
+    fragile: true
+
+  - name: "Lightbits Labs"
+    enabled: true
+    ats: scraper
+    careers_url: "https://www.lightbitslabs.com/careers/"
+    fragile: true
+
+  - name: "Vayyar"
+    enabled: true
+    ats: workable
+    slug: "vayyar"
+
+  - name: "Wiliot"
+    enabled: true
+    ats: comeet
+    slug: "wiliot"
+    uid: "F6.003"
+    token: "6F329B2DE6379829B229B2037983E8B3E8B"
+
+  - name: "Autotalks"
+    enabled: false
+    # Autotalks was acquired by Qualcomm; Qualcomm entry covers their jobs
+
+  - name: "Innoviz"
+    enabled: true
+    ats: scraper
+    careers_url: "https://innoviz.tech/careers"
+    fragile: true
+
+  - name: "Newsight Imaging"
+    enabled: true
+    ats: scraper
+    careers_url: "https://www.newsight.com/career/"
+    fragile: true
+
+  - name: "SolarEdge"
+    enabled: true
+    ats: scraper
+    careers_url: "https://corporate.solaredge.com/en/careers/open-positions"
+    fragile: true
+
+  - name: "Proteantecs"
+    enabled: true
+    ats: comeet
+    slug: "proteantecs"
+    uid: "D5.00E"
+    token: "5DE23340029121D562912029122334"
+
+  - name: "DriveNets"
+    enabled: true
+    ats: scraper
+    careers_url: "https://drivenets.com/careers/"
+    fragile: true
+

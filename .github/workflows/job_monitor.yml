@@ -1,0 +1,93 @@
+name: Hardware Job Monitor
+
+on:
+  # Every 4 hours
+  schedule:
+    - cron: "0 */4 * * *"
+  # Extra triggers to guarantee a run at 07:00 Israel time in BOTH summer (IDT=UTC+3) and winter (IST=UTC+2)
+  # 04:00 UTC = 07:00 IDT (summer, UTC+3)
+  # 05:00 UTC = 07:00 IST (winter, UTC+2)
+  # The every-4-hours cron already covers these slots most of the time,
+  # but we add them explicitly so the 07:00 morning digest is never missed.
+    - cron: "0 4 * * *"
+    - cron: "0 5 * * *"
+  # Allow manual triggering from GitHub Actions UI
+  workflow_dispatch:
+    inputs:
+      init:
+        description: "Run in --init mode (seed baseline, no notifications)"
+        required: false
+        type: boolean
+        default: false
+      test_notify:
+        description: "Send a test WhatsApp notification"
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  monitor:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write   # needed to commit state files back to the repo
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          # Fetch with a token that allows pushing back
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run monitor (init mode)
+        if: ${{ github.event.inputs.init == 'true' }}
+        env:
+          CALLMEBOT_PHONE:   ${{ secrets.CALLMEBOT_PHONE }}
+          CALLMEBOT_API_KEY: ${{ secrets.CALLMEBOT_API_KEY }}
+          WHATSAPP_PROVIDER: ${{ secrets.WHATSAPP_PROVIDER }}
+          TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_ACCOUNT_SID }}
+          TWILIO_AUTH_TOKEN:  ${{ secrets.TWILIO_AUTH_TOKEN }}
+          TWILIO_FROM:        ${{ secrets.TWILIO_FROM }}
+          TWILIO_TO:          ${{ secrets.TWILIO_TO }}
+        run: python main.py --init
+
+      - name: Run monitor (test notify)
+        if: ${{ github.event.inputs.test_notify == 'true' }}
+        env:
+          CALLMEBOT_PHONE:   ${{ secrets.CALLMEBOT_PHONE }}
+          CALLMEBOT_API_KEY: ${{ secrets.CALLMEBOT_API_KEY }}
+          WHATSAPP_PROVIDER: ${{ secrets.WHATSAPP_PROVIDER }}
+          TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_ACCOUNT_SID }}
+          TWILIO_AUTH_TOKEN:  ${{ secrets.TWILIO_AUTH_TOKEN }}
+          TWILIO_FROM:        ${{ secrets.TWILIO_FROM }}
+          TWILIO_TO:          ${{ secrets.TWILIO_TO }}
+        run: python main.py --test-notify
+
+      - name: Run monitor (normal)
+        if: ${{ github.event.inputs.init != 'true' && github.event.inputs.test_notify != 'true' }}
+        env:
+          CALLMEBOT_PHONE:   ${{ secrets.CALLMEBOT_PHONE }}
+          CALLMEBOT_API_KEY: ${{ secrets.CALLMEBOT_API_KEY }}
+          WHATSAPP_PROVIDER: ${{ secrets.WHATSAPP_PROVIDER }}
+          TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_ACCOUNT_SID }}
+          TWILIO_AUTH_TOKEN:  ${{ secrets.TWILIO_AUTH_TOKEN }}
+          TWILIO_FROM:        ${{ secrets.TWILIO_FROM }}
+          TWILIO_TO:          ${{ secrets.TWILIO_TO }}
+        run: python main.py
+
+      - name: Commit state files
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add seen_jobs.json pending_notifications.json || true
+          # Only commit if there are actual changes
+          git diff --cached --quiet || git commit -m "chore: update job state [skip ci]"
+          git push
