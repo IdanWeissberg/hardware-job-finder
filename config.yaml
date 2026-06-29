@@ -103,11 +103,13 @@ companies:
     eu: true    # Mobileye uses the EU Lever instance (jobs.eu.lever.co)
 
   - name: "Qualcomm"
-    enabled: true
-    ats: workday
-    workday_url: "https://qualcomm.wd12.myworkdayjobs.com/wday/cxs/qualcomm/External/jobs"
-    base_url: "https://qualcomm.wd12.myworkdayjobs.com"
+    enabled: false
+    ats: eightfold
+    domain: "qualcomm.com"
     location_filter: "Israel"
+    # NOTE: Qualcomm careers (careers.qualcomm.com, Eightfold-powered) sits behind
+    # a WAF that returns 403 to all automated requests (verified June 2026).
+    # Disabled until an accessible endpoint is found. Qualcomm acquired Autotalks.
 
   - name: "Apple"
     enabled: true
@@ -235,6 +237,25 @@ companies:
     base_url: "https://cisco.wd5.myworkdayjobs.com"
     location_filter: "Israel"
 
+  - name: "Motorola Solutions"
+    enabled: true
+    ats: workday
+    workday_url: "https://motorolasolutions.wd5.myworkdayjobs.com/wday/cxs/motorolasolutions/Careers/jobs"
+    base_url: "https://motorolasolutions.wd5.myworkdayjobs.com"
+    location_filter: "Israel"
+
+  - name: "Astera Labs"
+    enabled: true
+    ats: greenhouse
+    board: "asteralabs"
+    location_filter: "Israel"
+
+  - name: "Tenstorrent"
+    enabled: true
+    ats: greenhouse
+    board: "tenstorrent"
+    location_filter: "Israel"
+
   # =====================================================================
   # ISRAELI SEMICONDUCTOR / HARDWARE COMPANIES
   # =====================================================================
@@ -350,4 +371,26 @@ companies:
     ats: scraper
     careers_url: "https://drivenets.com/careers/"
     fragile: true
+
+  - name: "Xsight Labs"
+    enabled: true
+    ats: comeet
+    slug: "xsightlabs"
+    uid: "46.00C"
+    token: "64C25C864C12E41930326064C25C801930"
+
+  - name: "Sony Semiconductor Israel (Altair)"
+    enabled: true
+    ats: comeet
+    slug: "altair-semi"
+    uid: "88.003"
+    token: "88333123B95110644188833B9519894C9B4418"
+
+  - name: "Elbit Systems"
+    enabled: false
+    ats: scraper
+    careers_url: "https://elbitsystems.com/careers/"
+    fragile: true
+    # NOTE: Elbit's site returns 403 to automated requests (anti-bot). Disabled
+    # until an accessible jobs endpoint is found. Check manually at the URL above.
 
