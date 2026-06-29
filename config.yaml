@@ -176,13 +176,13 @@ companies:
     fragile: true
 
   - name: "Samsung Semiconductor"
-    enabled: true
+    enabled: false   # AUTO-DISABLED: greenhouse board is US-only; no Israel jobs on it
     ats: greenhouse
     board: "samsungsemiconductor"
     location_filter: "Israel"
 
   - name: "Western Digital"
-    enabled: true
+    enabled: false   # AUTO-DISABLED: smartrecruiters account is Asia manufacturing; no Israel jobs
     ats: smartrecruiters
     company_id: "WesternDigital"
     location_filter: "Israel"
@@ -195,18 +195,18 @@ companies:
     location_filter: "Israel"
 
   - name: "Texas Instruments"
-    enabled: true
+    enabled: false   # AUTO-DISABLED: careers.ti.com is JS-rendered, no public job API/sitemap
     ats: scraper
     careers_url: "https://careers.ti.com/search-jobs/Israel/524/4/0/39/2/0/0"
     fragile: true
 
   - name: "Microsoft"
-    enabled: true
+    enabled: false   # AUTO-DISABLED: careers.microsoft.com JS-rendered, no usable public API/sitemap
     ats: microsoft
     location_filter: "Israel"
 
   - name: "Synopsys"
-    enabled: true
+    enabled: false   # AUTO-DISABLED: JS-rendered; sitemap lacks per-job location data
     ats: scraper
     careers_url: "https://careers.synopsys.com/jobs?location=Israel&keywords=hardware+intern"
     fragile: true
@@ -233,13 +233,13 @@ companies:
     location_filter: "Israel"
 
   - name: "Infineon"
-    enabled: true
+    enabled: false   # AUTO-DISABLED: jobs.infineon.com JS-rendered, no public API
     ats: scraper
     careers_url: "https://jobs.infineon.com/careers?query=hardware+intern&location=Israel"
     fragile: true
 
   - name: "STMicroelectronics"
-    enabled: true
+    enabled: false   # AUTO-DISABLED: eightfold endpoint unreachable/times out
     ats: eightfold
     domain: "stmicroelectronics.com"
     location_filter: "Israel"
@@ -275,25 +275,26 @@ companies:
   # =====================================================================
 
   - name: "Tower Semiconductor"
-    enabled: true
+    enabled: false   # AUTO-DISABLED: Phenom site, no reachable public API
     ats: scraper
     careers_url: "https://careers.towersemi.com/career-opportunities/"
     fragile: true
 
   - name: "Nova"
-    enabled: true
+    enabled: false   # AUTO-DISABLED: custom WP careers site, no public job API
     ats: scraper
     careers_url: "https://www.nova.co.il/careers"
     fragile: true
 
   - name: "Camtek"
     enabled: true
-    ats: scraper
-    careers_url: "https://www.camtek.com/company/career"
-    fragile: true
+    ats: comeet
+    slug: "camtek"
+    uid: "F4.00D"
+    token: "4FD18F122EB00EF7EF722EB13F418F1"
 
   - name: "Ceva"
-    enabled: true
+    enabled: false   # AUTO-DISABLED: careers page JS-rendered, no public API
     ats: scraper
     careers_url: "https://ceva.csod.com/ux/ats/careersite/3/home"
     fragile: true
@@ -356,7 +357,7 @@ companies:
     # Autotalks was acquired by Qualcomm; Qualcomm entry covers their jobs
 
   - name: "Innoviz"
-    enabled: true
+    enabled: false   # AUTO-DISABLED: careers page JS-rendered, no public API
     ats: scraper
     careers_url: "https://innoviz.tech/careers"
     fragile: true
@@ -368,7 +369,7 @@ companies:
     fragile: true
 
   - name: "SolarEdge"
-    enabled: true
+    enabled: false   # AUTO-DISABLED: careers page JS-rendered, no public API
     ats: scraper
     careers_url: "https://corporate.solaredge.com/en/careers/open-positions"
     fragile: true
@@ -381,7 +382,7 @@ companies:
     token: "5DE23340029121D562912029122334"
 
   - name: "DriveNets"
-    enabled: true
+    enabled: false   # AUTO-DISABLED: careers page JS-rendered (404 on scrape)
     ats: scraper
     careers_url: "https://drivenets.com/careers/"
     fragile: true
