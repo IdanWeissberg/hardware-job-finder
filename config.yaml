@@ -386,6 +386,20 @@ companies:
     uid: "88.003"
     token: "88333123B95110644188833B9519894C9B4418"
 
+  - name: "Ceragon Networks"
+    enabled: true
+    ats: comeet
+    slug: "ceragon"
+    uid: "d3.003"
+    token: "3D3131FF4C01AC57A61AC51E98131FF4C"
+
+  - name: "Gilat Satellite Networks"
+    enabled: true
+    ats: comeet
+    slug: "gilat"
+    uid: "39.005"
+    token: "935373E52DD52DD126A373E49A8935373E935"
+
   - name: "Elbit Systems"
     enabled: false
     ats: scraper
