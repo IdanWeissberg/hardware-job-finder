@@ -411,6 +411,14 @@ companies:
     uid: "51.00F"
     token: "15F57C6DB15FAF8C5757CAF841D6DB"
 
+  - name: "AudioCodes"
+    enabled: true
+    ats: comeet
+    slug: "audiocodes"
+    uid: "85.004"
+    token: "5841B942C2058431A4108C269C108C0108C"
+    location_filter: "Israel"   # tags some IL jobs as 'EMEA'; filter by country
+
   - name: "Ceragon Networks"
     enabled: true
     ats: comeet
