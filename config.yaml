@@ -419,6 +419,14 @@ companies:
     token: "5841B942C2058431A4108C269C108C0108C"
     location_filter: "Israel"   # tags some IL jobs as 'EMEA'; filter by country
 
+  - name: "Kornit Digital"
+    enabled: true
+    ats: comeet
+    slug: "kornit"
+    uid: "11.00F"
+    token: "11F47C35D7D947C06BA59B59BA17"
+    location_filter: "Israel"
+
   - name: "Ceragon Networks"
     enabled: true
     ats: comeet
