@@ -386,6 +386,24 @@ companies:
     uid: "88.003"
     token: "88333123B95110644188833B9519894C9B4418"
 
+  - name: "Arbe Robotics"
+    enabled: true
+    ats: scraper
+    careers_url: "https://arberobotics.com/career/co/tel-aviv/all/"
+    fragile: true
+
+  - name: "Weebit Nano"
+    enabled: true
+    ats: scraper
+    careers_url: "https://www.weebit-nano.com/company/careers/"
+    fragile: true
+
+  - name: "TriEye"
+    enabled: true
+    ats: scraper
+    careers_url: "https://trieye.tech/careers/"
+    fragile: true
+
   - name: "Nuvoton"
     enabled: true
     ats: comeet
