@@ -16,6 +16,7 @@ keywords:
     - soc
     - silicon
     - "physical design"
+    - "digital design"
     - dft
     - analog
     - "mixed signal"
@@ -27,6 +28,13 @@ keywords:
     - chip
     - pcb
     - schematic
+    - cpu
+    - gpu
+    - dsp
+    - rf
+    - modem
+    - embedded
+    - firmware
     - ×—×•×ž×¨×”
 
   student:
@@ -103,13 +111,12 @@ companies:
     eu: true    # Mobileye uses the EU Lever instance (jobs.eu.lever.co)
 
   - name: "Qualcomm"
-    enabled: false
-    ats: eightfold
-    domain: "qualcomm.com"
+    enabled: true
+    ats: eightfold_sitemap
+    # Qualcomm's Eightfold search API is WAF-blocked (403), but its public XML
+    # sitemap is not — and each job URL slug encodes title + location.
+    sitemap_url: "https://careers.qualcomm.com/careers/sitemap.xml?domain=qualcomm.com"
     location_filter: "Israel"
-    # NOTE: Qualcomm careers (careers.qualcomm.com, Eightfold-powered) sits behind
-    # a WAF that returns 403 to all automated requests (verified June 2026).
-    # Disabled until an accessible endpoint is found. Qualcomm acquired Autotalks.
 
   - name: "Apple"
     enabled: true

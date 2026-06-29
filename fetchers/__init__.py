@@ -9,6 +9,7 @@ from .smartrecruiters import fetch_smartrecruiters
 from .icims import fetch_icims
 from .google_careers import fetch_google
 from .eightfold import fetch_eightfold
+from .eightfold_sitemap import fetch_eightfold_sitemap
 from .workable import fetch_workable
 from .scraper import fetch_scraper
 
@@ -24,6 +25,7 @@ FETCHER_MAP = {
     "icims": fetch_icims,
     "google": fetch_google,
     "eightfold": fetch_eightfold,
+    "eightfold_sitemap": fetch_eightfold_sitemap,
     "workable": fetch_workable,
     "scraper": fetch_scraper,
 }
