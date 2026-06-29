@@ -427,6 +427,14 @@ companies:
     token: "11F47C35D7D947C06BA59B59BA17"
     location_filter: "Israel"
 
+  - name: "Quantum Machines"
+    enabled: true
+    ats: comeet
+    slug: "quantummachines"
+    uid: "D6.000"
+    token: "6D028E0DA022106D01470221036803D502210"
+    location_filter: "Israel"
+
   - name: "Ceragon Networks"
     enabled: true
     ats: comeet
