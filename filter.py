@@ -12,7 +12,10 @@ from typing import Any
 def _matches_any(text: str, keywords: list[str]) -> bool:
     text_lower = text.lower()
     for kw in keywords:
-        pattern = re.escape(kw.lower())
+        # Match whole words/phrases only, so "intern" doesn't match "internal"
+        # and "soc" doesn't match "associate". \b works for the ASCII keywords;
+        # Hebrew keywords fall back to substring (no false-positive risk there).
+        pattern = r"\b" + re.escape(kw.lower()) + r"\b"
         if re.search(pattern, text_lower):
             return True
     return False
