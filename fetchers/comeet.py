@@ -12,6 +12,7 @@ API endpoint (when credentials available):
   GET https://www.comeet.co/careers-api/2.0/company/{uid}/positions
       ?token={token}&details=true
 """
+import html
 import json
 import logging
 import re
@@ -26,11 +27,40 @@ log = logging.getLogger(__name__)
 API_BASE = "https://www.comeet.co/careers-api/2.0/company"
 PUBLIC_BASE = "https://www.comeet.com/jobs"
 
+_TAG_RE = re.compile(r"<[^>]+>")
 
-def _parse_comeet_api(name: str, uid: str, token: str) -> list[dict]:
+_STUDENT_MARKERS = (
+    "student", "intern", "graduate", "junior", "new grad", "co-op", "co op",
+    "סטודנט", "מתמחה", "התמחות",
+)
+
+
+def _looks_like_student_role(title: str) -> bool:
+    t = title.lower()
+    return any(m in t for m in _STUDENT_MARKERS)
+
+
+def _in_location(loc_obj: dict, loc_str: str, location_filter: str) -> bool:
+    """Location filter for Comeet. Israeli firms with global offices (Ceragon,
+    Gilat) return non-IL jobs too, so when a filter is set we keep a job only if
+    its country code or location text matches. Country code is most reliable
+    because Comeet's text often omits the country (e.g. 'Caesarea, Haifa District')."""
+    if not location_filter:
+        return True
+    country = (loc_obj.get("country") or "").upper() if isinstance(loc_obj, dict) else ""
+    want = location_filter.lower()
+    if want in ("israel", "isr", "il"):
+        return country == "IL" or "israel" in loc_str.lower()
+    return want in loc_str.lower()
+
+
+def _parse_comeet_api(name: str, uid: str, token: str, location_filter: str = "") -> list[dict]:
     url = f"{API_BASE}/{uid}/positions"
     try:
-        resp = _http.get(url, params={"token": token, "details": "false"})
+        # details=true returns the full posting body (in a list of named sections)
+        # plus structured location — needed so the hardware/student filter has
+        # real text to match, and so jobs get a correct location.
+        resp = _http.get(url, params={"token": token, "details": "true"})
         positions = resp.json()
     except Exception as exc:
         log.warning("[%s] Comeet API failed: %s", name, exc)
@@ -38,17 +68,42 @@ def _parse_comeet_api(name: str, uid: str, token: str) -> list[dict]:
 
     jobs = []
     for p in positions:
+        if not isinstance(p, dict):
+            continue
         job_id = p.get("uid", p.get("comeet_id", ""))
-        loc_list = p.get("details", {}).get("location", [])
-        loc = ", ".join(
-            item.get("text", "") for item in loc_list if isinstance(item, dict)
-        ) if loc_list else p.get("location_name", "")
-        url_val = p.get("url_active_version", p.get("url", ""))
+
+        loc_obj = p.get("location") or {}
+        if isinstance(loc_obj, dict):
+            loc = ", ".join(x for x in (loc_obj.get("city"), loc_obj.get("state")) if x) \
+                or loc_obj.get("name", "")
+        else:
+            loc = str(loc_obj)
+
+        if not _in_location(loc_obj, loc, location_filter):
+            continue
+
+        # Only feed the description to the relevance filter for student/intern-
+        # titled roles, mirroring the Workday fetcher. This avoids senior roles
+        # matching just because their body text mentions "graduate"/"students".
+        title = p.get("name", "")
+        description = ""
+        if _looks_like_student_role(title):
+            desc_parts = [p.get("employment_type", ""), p.get("experience_level", "")]
+            det = p.get("details")
+            if isinstance(det, list):
+                for sec in det:
+                    if isinstance(sec, dict) and sec.get("value"):
+                        desc_parts.append(_TAG_RE.sub(" ", html.unescape(str(sec["value"]))))
+            description = " ".join(part for part in desc_parts if part)
+
+        url_val = (p.get("url_comeet_hosted_page") or p.get("url_active_page")
+                   or p.get("position_url", ""))
         jobs.append({
             "company": name,
             "job_id": str(job_id),
             "title": p.get("name", ""),
             "location": loc,
+            "description": description,
             "url": url_val,
         })
     return jobs
@@ -126,9 +181,10 @@ def fetch_comeet(company_cfg: dict[str, Any]) -> list[dict]:
     slug = company_cfg.get("slug", "")
     uid = company_cfg.get("uid", "")
     token = company_cfg.get("token", "")
+    location_filter = company_cfg.get("location_filter", "")
 
     if uid and token:
-        jobs = _parse_comeet_api(name, uid, token)
+        jobs = _parse_comeet_api(name, uid, token, location_filter)
     else:
         jobs = _parse_comeet_page(name, slug)
 
