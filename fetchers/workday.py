@@ -48,9 +48,20 @@ def _fetch_description(detail_base: str, external_path: str) -> str:
 
 
 # Map a human location filter to the various tokens Workday tenants use in
-# their locationsText. Some use "Israel, Haifa", others "Rehovot,ISR".
+# their locationsText. Some use "Israel, Haifa", others "Rehovot,ISR" or just a
+# bare city name ("Petah-Tikva", "Yokneam") with no country at all — so we also
+# match the major Israeli cities/sites where these companies operate.
 _LOCATION_TOKENS = {
-    "israel": ("israel", "isr"),
+    "israel": (
+        "israel", "isr", "il -", "il-",
+        "haifa", "tel aviv", "tel-aviv", "petah", "petach", "herzliya", "herzlia",
+        "ra'anana", "raanana", "yokneam", "yoqneam", "netanya", "jerusalem",
+        "beer sheva", "be'er sheva", "kiryat gat", "caesarea", "rosh haayin",
+        "rosh ha'ayin", "hod hasharon", "hod-hasharon", "migdal haemek",
+        "migdal ha'emek", "yavne", "kfar saba", "ramat gan", "or yehuda",
+        "airport city", "tirat carmel", "kfar netter", "rehovot", "modiin",
+        "ashdod", "karmiel",
+    ),
 }
 
 
