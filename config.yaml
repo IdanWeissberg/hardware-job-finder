@@ -477,6 +477,46 @@ companies:
     token: "935373E52DD52DD126A373E49A8935373E935"
     location_filter: "Israel"   # Gilat is global; keep only IL
 
+  - name: "DustPhotonics"
+    enabled: true
+    ats: comeet
+    slug: "dustphotonics"
+    uid: "05.00B"
+    token: "50B1937234D0234D0F211E422D6350B"
+    # Silicon photonics (optical transceivers) — has Junior/student roles.
+
+  - name: "Infinidat"
+    enabled: true
+    ats: comeet
+    slug: "infinidat"
+    uid: "D6.003"
+    token: "6D328F2DA6221F221F221F221F002FC5"
+    location_filter: "Israel"   # global company — keep only IL
+
+  - name: "REE Automotive"
+    enabled: true
+    ats: comeet
+    slug: "ree"
+    uid: "D3.00B"
+    token: "3DB1347F6C7B63DB3DB13471AFD3DB3DB"
+    location_filter: "Israel"   # global company — keep only IL
+
+  - name: "Foretellix"
+    enabled: true
+    ats: comeet
+    slug: "foretellix"
+    uid: "84.007"
+    token: "48716A316A31FB101FB116A3D951FB11B2A"
+    location_filter: "Israel"   # global company — keep only IL
+
+  - name: "Classiq"
+    enabled: true
+    ats: comeet
+    slug: "classiq"
+    uid: "F7.008"
+    token: "7F82FD01FE03FC037C87F87F82FD017E847B8"
+    location_filter: "Israel"   # global company — keep only IL
+
   - name: "Elbit Systems"
     enabled: false
     ats: scraper
