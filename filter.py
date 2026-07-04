@@ -1,7 +1,14 @@
 """
 Job relevance filter.
-A job passes if it matches at least one hardware keyword AND
-at least one student/intern keyword (title + description, case-insensitive).
+
+Two modes (set via config `filter.mode`):
+  "student_only"        — a job passes if it is a student/intern role
+                          (ANY student keyword). Default: the user wants every
+                          student position at the monitored companies.
+  "hardware_and_student"— stricter: must match a hardware keyword AND a
+                          student keyword.
+
+Matching is case-insensitive over title + description + location.
 """
 from __future__ import annotations
 
@@ -21,13 +28,22 @@ def _matches_any(text: str, keywords: list[str]) -> bool:
     return False
 
 
-def is_relevant(job: dict[str, Any], keywords: dict[str, list[str]]) -> bool:
-    """Return True if job matches both keyword categories."""
+def is_relevant(
+    job: dict[str, Any],
+    keywords: dict[str, list[str]],
+    mode: str = "student_only",
+) -> bool:
+    """Return True if the job is relevant under the given mode."""
     searchable = " ".join([
         job.get("title", ""),
         job.get("description", ""),
         job.get("location", ""),
     ])
-    hw_match = _matches_any(searchable, keywords.get("hardware", []))
     student_match = _matches_any(searchable, keywords.get("student", []))
-    return hw_match and student_match
+
+    if mode == "hardware_and_student":
+        hw_match = _matches_any(searchable, keywords.get("hardware", []))
+        return hw_match and student_match
+
+    # default: student_only — every student/intern role qualifies
+    return student_match

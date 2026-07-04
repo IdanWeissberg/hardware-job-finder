@@ -125,22 +125,10 @@ def _format_jobs_telegram(jobs: list[dict], max_jobs: int = 20) -> str:
     return msg
 
 
-def _send_telegram(jobs: list[dict], max_jobs: int = 20) -> bool:
-    token = os.environ.get("TELEGRAM_BOT_TOKEN", "")
-    chat_id = os.environ.get("TELEGRAM_CHAT_ID", "")
+TELEGRAM_BATCH = 15  # jobs per message, keeps each well under the 4096-char limit
 
-    if not token or not chat_id:
-        log.error("TELEGRAM_BOT_TOKEN or TELEGRAM_CHAT_ID env vars not set")
-        return False
 
-    header = (
-        f"🚨 <b>{len(jobs)} משרה{'ות' if len(jobs) > 1 else ''} חומרה "
-        f"חדשה{'ות' if len(jobs) > 1 else ''} נמצא{'ו' if len(jobs) > 1 else ''}!</b>\n\n"
-    )
-    text = header + _format_jobs_telegram(jobs, max_jobs)
-    if len(text) > 4096:
-        text = text[:4040] + "\n…(קוצר)"
-
+def _post_telegram(token: str, chat_id: str, text: str) -> bool:
     url = f"https://api.telegram.org/bot{token}/sendMessage"
     payload = {
         "chat_id": chat_id,
@@ -151,13 +139,39 @@ def _send_telegram(jobs: list[dict], max_jobs: int = 20) -> bool:
     try:
         resp = requests.post(url, json=payload, timeout=15)
         if resp.status_code == 200 and resp.json().get("ok"):
-            log.info("Telegram: message sent successfully")
             return True
         log.warning("Telegram returned: %s — %s", resp.status_code, resp.text[:200])
         return False
     except Exception as exc:
         log.error("Telegram request failed: %s", exc)
         return False
+
+
+def _send_telegram(jobs: list[dict], max_jobs: int = 20) -> bool:
+    token = os.environ.get("TELEGRAM_BOT_TOKEN", "")
+    chat_id = os.environ.get("TELEGRAM_CHAT_ID", "")
+
+    if not token or not chat_id:
+        log.error("TELEGRAM_BOT_TOKEN or TELEGRAM_CHAT_ID env vars not set")
+        return False
+
+    total = len(jobs)
+    # Split into batches so a large digest is never truncated / lost.
+    batches = [jobs[i:i + TELEGRAM_BATCH] for i in range(0, total, TELEGRAM_BATCH)]
+    all_ok = True
+    for idx, batch in enumerate(batches, 1):
+        part = f" ({idx}/{len(batches)})" if len(batches) > 1 else ""
+        header = (
+            f"🚨 <b>{total} משרת סטודנט/התמחות חדשה{'ות' if total > 1 else ''}"
+            f"{part}</b>\n\n"
+        )
+        text = header + _format_jobs_telegram(batch, max_jobs=TELEGRAM_BATCH)
+        if not _post_telegram(token, chat_id, text):
+            all_ok = False
+
+    if all_ok:
+        log.info("Telegram: sent %d job(s) in %d message(s)", total, len(batches))
+    return all_ok
 
 
 def send_whatsapp(jobs: list[dict], max_jobs: int = 20) -> bool:

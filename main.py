@@ -100,6 +100,7 @@ def run(init_mode: bool = False) -> None:
     cfg = load_config()
     companies = cfg.get("companies", [])
     keywords = cfg.get("keywords", {})
+    filter_mode = cfg.get("filter", {}).get("mode", "student_only")
     notif_cfg = cfg.get("notification", {})
     max_jobs_per_msg = notif_cfg.get("max_jobs_per_message", 20)
 
@@ -127,7 +128,7 @@ def run(init_mode: bool = False) -> None:
             total_new += 1
             company_new += 1
 
-            if job_filter.is_relevant(job, keywords):
+            if job_filter.is_relevant(job, keywords, mode=filter_mode):
                 if not init_mode:
                     new_relevant.append(job)
                     log.info("[%s] NEW relevant job: %s | %s", company_name, job["title"], job["location"])

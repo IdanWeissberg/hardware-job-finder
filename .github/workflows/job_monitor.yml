@@ -1,16 +1,13 @@
 name: Hardware Job Monitor
 
 on:
-  # Every 4 hours
+  # Every hour. Runs take ~1 min, so this stays well within the free-tier
+  # Actions minutes while cutting the max delay before a new job is reported
+  # from ~4 hours to ~1 hour. (GitHub may still delay scheduled runs by a few
+  # minutes under load — that drift is on GitHub's side, not the schedule.)
+  # An hourly run also always covers the 07:00 Israel-time morning digest.
   schedule:
-    - cron: "0 */4 * * *"
-  # Extra triggers to guarantee a run at 07:00 Israel time in BOTH summer (IDT=UTC+3) and winter (IST=UTC+2)
-  # 04:00 UTC = 07:00 IDT (summer, UTC+3)
-  # 05:00 UTC = 07:00 IST (winter, UTC+2)
-  # The every-4-hours cron already covers these slots most of the time,
-  # but we add them explicitly so the 07:00 morning digest is never missed.
-    - cron: "0 4 * * *"
-    - cron: "0 5 * * *"
+    - cron: "0 * * * *"
   # Allow manual triggering from GitHub Actions UI
   workflow_dispatch:
     inputs:

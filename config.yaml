@@ -3,8 +3,16 @@
 # Edit this file to add/remove companies or adjust keywords.
 # ============================================================
 
+# ---------- Filter mode ----------
+# student_only         -> send EVERY student/intern role at the monitored
+#                         companies (recommended: they're all chip/tech firms).
+# hardware_and_student -> stricter: must match a hardware keyword too.
+filter:
+  mode: student_only
+
 # ---------- Keyword filters ----------
-# A job must match at least ONE keyword from EACH list.
+# In student_only mode only the `student` list is used to decide relevance.
+# The `hardware` list is used only in hardware_and_student mode.
 keywords:
   hardware:
     - hardware
@@ -176,10 +184,13 @@ companies:
     fragile: true
 
   - name: "Samsung Semiconductor"
-    enabled: false   # AUTO-DISABLED: greenhouse board is US-only; no Israel jobs on it
-    ats: greenhouse
-    board: "samsungsemiconductor"
-    location_filter: "Israel"
+    enabled: true
+    ats: comeet
+    slug: "samsung"
+    uid: "D4.005"
+    token: "4D518291CFE13540135413544D518291CFE"
+    # Samsung Israel R&D Center (SIRC) — has Digital Design/Firmware/ISP students.
+    # The old greenhouse board was Samsung's US semiconductor unit (no IL jobs).
 
   - name: "Western Digital"
     enabled: false   # AUTO-DISABLED: smartrecruiters account is Asia manufacturing; no Israel jobs
