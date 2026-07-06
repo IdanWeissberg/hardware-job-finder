@@ -100,6 +100,9 @@ def _collect_postings(name: str, url: str, search: str, page_cap: int) -> list[d
     postings: list[dict] = []
     offset = 0
     pages = 0
+    total = None  # some tenants (e.g. NVIDIA) only report `total` on page 1 and
+                  # return 0 afterwards, so capture it once and don't let a later
+                  # 0 stop pagination early. Otherwise rely on an empty batch.
     while pages < page_cap:
         payload = {"appliedFacets": {}, "limit": PAGE_SIZE, "offset": offset, "searchText": search}
         try:
@@ -112,10 +115,11 @@ def _collect_postings(name: str, url: str, search: str, page_cap: int) -> list[d
         if not batch:
             break
         postings.extend(batch)
-        total = data.get("total", 0)
+        if total is None:
+            total = data.get("total", 0)
         offset += PAGE_SIZE
         pages += 1
-        if offset >= total:
+        if total and offset >= total:
             break
     return postings
 
@@ -131,10 +135,13 @@ def fetch_workday(company_cfg: dict[str, Any]) -> list[dict]:
     # per-job externalPath (e.g. .../cxs/intel/External/job/Israel/...).
     detail_base = url[: -len("/jobs")] if url.endswith("/jobs") else url
 
-    # Strategy 1: let Workday's own search narrow by location (fast: a couple
-    # pages). Works for tenants that index "Israel" in their searchable text.
+    # Strategy 1: let Workday's own search narrow by location. Big tenants like
+    # NVIDIA return 400+ "Israel" text matches (many not actually in Israel), and
+    # the real Israel student roles can sit past the first pages — so page deep
+    # enough to fetch them all. The loop stops at `total`, so smaller tenants
+    # don't over-fetch.
     effective_search = " ".join(t for t in (search_text, location_filter) if t).strip()
-    raw = _collect_postings(name, url, effective_search, page_cap=15)
+    raw = _collect_postings(name, url, effective_search, page_cap=40)
 
     # Strategy 2: some tenants name locations differently ("Rehovot,ISR") and
     # return nothing for an "Israel" text search. If the targeted search came up
