@@ -62,6 +62,8 @@ jobs:
           WHATSAPP_PROVIDER: ${{ secrets.WHATSAPP_PROVIDER }}
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID:   ${{ secrets.TELEGRAM_CHAT_ID }}
+          GOOGLE_API_KEY:     ${{ secrets.GOOGLE_API_KEY }}
+          GOOGLE_CSE_ID:      ${{ secrets.GOOGLE_CSE_ID }}
           TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_ACCOUNT_SID }}
           TWILIO_AUTH_TOKEN:  ${{ secrets.TWILIO_AUTH_TOKEN }}
           TWILIO_FROM:        ${{ secrets.TWILIO_FROM }}
@@ -76,6 +78,8 @@ jobs:
           WHATSAPP_PROVIDER: ${{ secrets.WHATSAPP_PROVIDER }}
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID:   ${{ secrets.TELEGRAM_CHAT_ID }}
+          GOOGLE_API_KEY:     ${{ secrets.GOOGLE_API_KEY }}
+          GOOGLE_CSE_ID:      ${{ secrets.GOOGLE_CSE_ID }}
           TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_ACCOUNT_SID }}
           TWILIO_AUTH_TOKEN:  ${{ secrets.TWILIO_AUTH_TOKEN }}
           TWILIO_FROM:        ${{ secrets.TWILIO_FROM }}
@@ -90,6 +94,8 @@ jobs:
           WHATSAPP_PROVIDER: ${{ secrets.WHATSAPP_PROVIDER }}
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID:   ${{ secrets.TELEGRAM_CHAT_ID }}
+          GOOGLE_API_KEY:     ${{ secrets.GOOGLE_API_KEY }}
+          GOOGLE_CSE_ID:      ${{ secrets.GOOGLE_CSE_ID }}
           TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_ACCOUNT_SID }}
           TWILIO_AUTH_TOKEN:  ${{ secrets.TWILIO_AUTH_TOKEN }}
           TWILIO_FROM:        ${{ secrets.TWILIO_FROM }}

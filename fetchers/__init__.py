@@ -12,6 +12,7 @@ from .eightfold import fetch_eightfold
 from .eightfold_sitemap import fetch_eightfold_sitemap
 from .workable import fetch_workable
 from .scraper import fetch_scraper
+from .linkedin_search import fetch_linkedin_search
 
 FETCHER_MAP = {
     "workday": fetch_workday,
@@ -28,4 +29,5 @@ FETCHER_MAP = {
     "eightfold_sitemap": fetch_eightfold_sitemap,
     "workable": fetch_workable,
     "scraper": fetch_scraper,
+    "linkedin_search": fetch_linkedin_search,
 }

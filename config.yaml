@@ -525,3 +525,15 @@ companies:
     # NOTE: Elbit's site returns 403 to automated requests (anti-bot). Disabled
     # until an accessible jobs endpoint is found. Check manually at the URL above.
 
+  # ===================================================================
+  # LinkedIn public posts — "hidden" jobs shared as posts, via Google API
+  # (needs GOOGLE_API_KEY + GOOGLE_CSE_ID secrets). See fetchers/linkedin_search.py
+  # ===================================================================
+  - name: "LinkedIn Posts"
+    enabled: true
+    ats: linkedin_search
+    days: 21
+    queries:
+      - '(hardware OR asic OR vlsi OR fpga OR rtl OR "physical design" OR חומרה) (student OR intern OR סטודנט OR מתמחה) (Israel OR ישראל)'
+      - '(chip OR silicon OR soc OR verification OR "design verification") (student OR intern OR סטודנט OR מתמחה) (Israel OR ישראל)'
+      - '("הנדסת חומרה" OR "מהנדס חומרה" OR VLSI OR ASIC OR אימות) (סטודנט OR מתמחה OR junior) ישראל'
