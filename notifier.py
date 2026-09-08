@@ -149,9 +149,12 @@ def _post_telegram(token: str, chat_id: str, text: str) -> bool:
 
 def _send_telegram(jobs: list[dict], max_jobs: int = 20) -> bool:
     token = os.environ.get("TELEGRAM_BOT_TOKEN", "")
-    chat_id = os.environ.get("TELEGRAM_CHAT_ID", "")
+    # TELEGRAM_CHAT_ID may be a single id or a comma-separated list, so the same
+    # alerts can go to several people (each must have messaged the bot once).
+    # Example: "1936803278,987654321".
+    chat_ids = [c.strip() for c in os.environ.get("TELEGRAM_CHAT_ID", "").split(",") if c.strip()]
 
-    if not token or not chat_id:
+    if not token or not chat_ids:
         log.error("TELEGRAM_BOT_TOKEN or TELEGRAM_CHAT_ID env vars not set")
         return False
 
@@ -166,11 +169,14 @@ def _send_telegram(jobs: list[dict], max_jobs: int = 20) -> bool:
             f"{part}</b>\n\n"
         )
         text = header + _format_jobs_telegram(batch, max_jobs=TELEGRAM_BATCH)
-        if not _post_telegram(token, chat_id, text):
-            all_ok = False
+        for cid in chat_ids:
+            # One recipient failing must not stop delivery to the others.
+            if not _post_telegram(token, cid, text):
+                all_ok = False
 
     if all_ok:
-        log.info("Telegram: sent %d job(s) in %d message(s)", total, len(batches))
+        log.info("Telegram: sent %d job(s) in %d message(s) to %d recipient(s)",
+                 total, len(batches), len(chat_ids))
     return all_ok
 
 
