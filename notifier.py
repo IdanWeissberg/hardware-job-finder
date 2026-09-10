@@ -151,7 +151,7 @@ def _send_telegram(jobs: list[dict], max_jobs: int = 20) -> bool:
     token = os.environ.get("TELEGRAM_BOT_TOKEN", "")
     # TELEGRAM_CHAT_ID may be a single id or a comma-separated list, so the same
     # alerts can go to several people (each must have messaged the bot once).
-    # Example: "1936803278,987654321".
+    # Example: "111111111,222222222".
     chat_ids = [c.strip() for c in os.environ.get("TELEGRAM_CHAT_ID", "").split(",") if c.strip()]
 
     if not token or not chat_ids:
