@@ -20,6 +20,8 @@ from typing import Any
 
 from bs4 import BeautifulSoup
 
+from redact import redact
+
 from . import _http
 
 log = logging.getLogger(__name__)
@@ -63,7 +65,7 @@ def _parse_comeet_api(name: str, uid: str, token: str, location_filter: str = ""
         resp = _http.get(url, params={"token": token, "details": "true"})
         positions = resp.json()
     except Exception as exc:
-        log.warning("[%s] Comeet API failed: %s", name, exc)
+        log.warning("[%s] Comeet API failed: %s", name, redact(exc))
         return []
 
     jobs = []

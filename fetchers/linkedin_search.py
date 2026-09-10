@@ -25,6 +25,8 @@ import os
 import re
 from typing import Any
 
+from redact import redact
+
 from . import _http
 
 log = logging.getLogger(__name__)
@@ -76,7 +78,7 @@ def fetch_linkedin_search(company_cfg: dict[str, Any]) -> list[dict]:
             resp = _http.get(CSE_URL, params=params)
             data = resp.json()
         except Exception as exc:
-            log.warning("[%s] Google CSE query failed: %s", name, exc)
+            log.warning("[%s] Google CSE query failed: %s", name, redact(exc))
             continue
 
         for item in data.get("items", []):

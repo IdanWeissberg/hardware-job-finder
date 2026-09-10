@@ -30,6 +30,8 @@ import urllib.parse
 
 import requests
 
+from redact import redact
+
 log = logging.getLogger(__name__)
 
 MAX_WHATSAPP_CHARS = 1600  # safe limit below WhatsApp's 4096
@@ -73,7 +75,7 @@ def _send_callmebot(text: str) -> bool:
         log.warning("CallMeBot returned: %s — %s", resp.status_code, resp.text[:200])
         return False
     except Exception as exc:
-        log.error("CallMeBot request failed: %s", exc)
+        log.error("CallMeBot request failed: %s", redact(exc))
         return False
 
 
@@ -99,7 +101,7 @@ def _send_twilio(text: str) -> bool:
         log.info("Twilio: message sent, SID=%s", msg.sid)
         return True
     except Exception as exc:
-        log.error("Twilio request failed: %s", exc)
+        log.error("Twilio request failed: %s", redact(exc))
         return False
 
 
@@ -140,10 +142,10 @@ def _post_telegram(token: str, chat_id: str, text: str) -> bool:
         resp = requests.post(url, json=payload, timeout=15)
         if resp.status_code == 200 and resp.json().get("ok"):
             return True
-        log.warning("Telegram returned: %s — %s", resp.status_code, resp.text[:200])
+        log.warning("Telegram returned: %s — %s", resp.status_code, redact(resp.text[:200]))
         return False
     except Exception as exc:
-        log.error("Telegram request failed: %s", exc)
+        log.error("Telegram request failed: %s", redact(exc))
         return False
 
 
