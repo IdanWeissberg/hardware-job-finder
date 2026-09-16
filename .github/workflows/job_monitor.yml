@@ -1,15 +1,16 @@
 name: Hardware Job Monitor
 
 on:
-  # Every 30 minutes during the Israel daytime; nothing overnight.
-  # Cron is UTC; Israel is UTC+3 in summer (IDT) and UTC+2 in winter (IST).
-  # 04:00-20:30 UTC = 07:00-23:30 in summer and 06:00-22:30 in winter, so BOTH
-  # seasons get a run at 07:00 Israel time for the morning digest.
-  # Anything found overnight is queued by the quiet-hours logic (00:00-07:00
-  # Israel, DST-aware in main.py) and delivered in one digest at the 07:00 run.
-  # Repo is public, so Actions minutes are unlimited and the window is not trimmed.
-  # NOTE: GitHub may delay or skip scheduled runs under load; the 30-min cadence
-  # is a best effort, not a guarantee.
+  # These cron slots only START the monitor; they do NOT set the cadence.
+  # GitHub drops most scheduled triggers on shared runners (measured on this
+  # repo: ~4 runs/day out of 34). So the job itself stays alive and rescans
+  # every 30 minutes (see the loop in "Run monitor (normal)"). The many slots
+  # below are a safety net: whenever a loop ends or is cancelled, the next
+  # trigger restarts one, usually within a few hours.
+  # Cron is UTC; Israel is UTC+3 (IDT) in summer, UTC+2 (IST) in winter.
+  # 04:00-20:30 UTC = 07:00-23:30 summer / 06:00-22:30 winter, so both seasons
+  # get a 07:00 Israel start for the morning digest. Overnight finds stay silent
+  # via the quiet-hours logic in main.py and go out in the 07:00 digest.
   schedule:
     - cron: "0,30 4-20 * * *"
   # Allow manual triggering from GitHub Actions UI
@@ -26,9 +27,16 @@ on:
         type: boolean
         default: false
 
+concurrency:
+  # Only one monitor alive at a time. A new trigger replaces the running loop
+  # instead of two jobs fighting over pushing the state file.
+  group: job-monitor
+  cancel-in-progress: true
+
 jobs:
   monitor:
     runs-on: ubuntu-latest
+    timeout-minutes: 350
     permissions:
       contents: write   # needed to commit state files back to the repo
 
@@ -94,13 +102,49 @@ jobs:
           TWILIO_AUTH_TOKEN:  ${{ secrets.TWILIO_AUTH_TOKEN }}
           TWILIO_FROM:        ${{ secrets.TWILIO_FROM }}
           TWILIO_TO:          ${{ secrets.TWILIO_TO }}
-        run: python main.py
-
-      - name: Commit state files
         run: |
+          # GitHub's scheduler drops most cron triggers on shared runners
+          # (measured: ~4 runs/day instead of 34). So we stop relying on it for
+          # cadence: this single job stays alive and scans every 30 minutes by
+          # itself, committing state after each pass so nothing is lost if the
+          # runner is cancelled. Free because the repo is public.
+          set +e
           git config user.name  "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add seen_jobs.json pending_notifications.json || true
-          # Only commit if there are actual changes
-          git diff --cached --quiet || git commit -m "chore: update job state [skip ci]"
-          git push
+          INTERVAL=1800            # 30 minutes
+          END=$(( $(date +%s) + 330*60 ))   # stop ~5.5h in, under the 6h job cap
+          PASS=0
+          while : ; do
+            PASS=$((PASS+1))
+            echo "::group::scan pass $PASS ($(date -u +%H:%M:%SZ))"
+            python main.py
+            git add seen_jobs.json pending_notifications.json
+            if ! git diff --cached --quiet ; then
+              git commit -m "chore: update job state [skip ci]"
+              git pull --rebase --autostash origin main
+              git push
+            fi
+            echo "::endgroup::"
+            NOW=$(date +%s)
+            if [ $(( END - NOW )) -lt $INTERVAL ] ; then
+              echo "budget spent after $PASS pass(es); exiting so the next trigger starts a fresh loop"
+              break
+            fi
+            sleep $INTERVAL
+          done
+
+      - name: Commit state files
+        if: always()
+        run: |
+          # Safety net for the init / test-notify paths; the normal loop already
+          # commits after every pass. Must never fail the job.
+          set +e
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add seen_jobs.json pending_notifications.json
+          if ! git diff --cached --quiet ; then
+            git commit -m "chore: update job state [skip ci]"
+            git pull --rebase --autostash origin main
+            git push
+          fi
+          exit 0
