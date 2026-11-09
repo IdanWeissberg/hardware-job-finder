@@ -1,1 +1,10 @@
-[]
+[
+  {
+    "company": "Apple",
+    "job_id": "200694073",
+    "title": "Junior Wireless SoC Design Verification Engineer",
+    "location": "Israel, Israel",
+    "description": "Apple's wireless chip powers connectivity across every new iPhone — and its successor is already taking shape. Would you like to join Apple's growing wireless silicon development team?\nOur Wireless SOC organization owns every aspect of wireless silicon development, with a particular emphasis on highly energy-efficient design and new technologies that transform the user experience at the product level. It is driven by a world-class, vertically integrated team spanning RF/Analog, Systems/PHY/MAC, VLSI/RTL design and integration, Emulation, Design Verification, Test and Validation, and FW/SW engineering.\nAs a Wireless SOC Design Verification Engineer, you'll be at the heart of the chip design effort — owning a meaningful verification scope and growing it project to project. \nYou'll work alongside DV methodologists, designers, architects, communication systems engineers, and firmware engineers to build reusable testbenches and verification environments using the latest metric-driven verification methodology.",
+    "url": "https://jobs.apple.com/en-us/details/200694073"
+  }
+]
